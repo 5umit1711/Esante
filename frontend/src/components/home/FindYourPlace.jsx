@@ -1,20 +1,56 @@
+import { motion } from "framer-motion";
+
+const fromLeft = {
+  hidden: { opacity: 0, x: -40 },
+  visible: { opacity: 1, x: 0 },
+};
+
+const fromRight = {
+  hidden: { opacity: 0, x: 40 },
+  visible: { opacity: 1, x: 0 },
+};
+
+const hoverTween = {
+  type: "tween",
+  duration: 0.25,
+  ease: [0.4, 0, 0.2, 1],
+};
+
 const FindYourPlace = () => {
   return (
     <section className="w-full bg-white py-32">
       <div className="w-full px-20">
 
-        <div className="mb-16 max-w-2xl">
+        {/* SECTION HEADING */}
+        <motion.div
+          variants={fromRight}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
+          className="mb-16 max-w-2xl"
+        >
           <h2 className="text-4xl md:text-5xl font-semibold text-gray-900">
-            Find Your Place in <span className="text-orange-500 italic">Australia</span>
+            Find Your Place in{" "}
+            <span className="text-orange-500 italic">Australia</span>
           </h2>
           <p className="mt-4 text-gray-600">
             Explore major hubs for education and employment.
           </p>
-        </div>
+        </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
 
-          <div className="relative rounded-3xl overflow-hidden">
+          {/* LEFT CARD (CLASSROOM) */}
+          <motion.div
+            variants={fromLeft}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+            whileHover={{ scale: 1.04, transition: hoverTween }}
+            className="relative rounded-3xl overflow-hidden will-change-transform"
+          >
             <img
               src="/find-place/classroom.png"
               alt="University classroom"
@@ -28,10 +64,20 @@ const FindYourPlace = () => {
             <div className="absolute bottom-4 right-4 bg-white text-[#003C32] text-sm px-4 py-2 rounded-full flex items-center gap-2">
               👥 54,000+ Students
             </div>
-          </div>
 
-          <div className="bg-[#003C32] text-white rounded-3xl p-10 relative">
+            <div className="absolute inset-0 bg-black/10 opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+          </motion.div>
 
+          {/* RIGHT CARD (UNIVERSITY DETAILS) */}
+          <motion.div
+            variants={fromRight}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+            whileHover={{ scale: 1.04, transition: hoverTween }}
+            className="bg-[#003C32] text-white rounded-3xl p-10 relative will-change-transform"
+          >
             <img
               src="/find-place/melbourne.png"
               alt="Melbourne"
@@ -69,14 +115,13 @@ const FindYourPlace = () => {
                 ›
               </button>
             </div>
-
-          </div>
+          </motion.div>
 
         </div>
 
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default FindYourPlace
+export default FindYourPlace;

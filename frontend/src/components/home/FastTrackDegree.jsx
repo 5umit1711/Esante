@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { useState, useRef } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
 
 const programs = {
   Management: [
@@ -26,35 +26,30 @@ const skills = [
   { title: "Information Technology", image: "/fast-track/it.png" },
 ];
 
-const fromLeft = {
-  hidden: { opacity: 0, x: -40 },
-  visible: { opacity: 1, x: 0 },
-};
-
-const fromRight = {
-  hidden: { opacity: 0, x: 40 },
-  visible: { opacity: 1, x: 0 },
-};
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
-};
-
 const FastTrackDegree = () => {
-  const [activeTab, setActiveTab] = useState("Management");
+  const [activeTab] = useState("Management");
+  const sectionRef = useRef(null);
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+
+  const leftX = useTransform(scrollYProgress, [0, 1], [-60, 60]);
+  const rightX = useTransform(scrollYProgress, [0, 1], [60, -60]);
+  const fade = useTransform(scrollYProgress, [0, 0.4, 1], [0, 1, 0]);
+  const scale = useTransform(scrollYProgress, [0, 0.4, 1], [0.95, 1, 0.95]);
 
   return (
-    <section className="w-full bg-[#FFFDF6] py-32">
+    <section
+      ref={sectionRef}
+      className="w-full bg-[#FFFDF6] py-32"
+    >
       <div className="w-full px-20">
 
         {/* SECTION HEADING */}
         <motion.div
-          variants={fromLeft}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.7, ease: "easeOut" }}
+          style={{ x: leftX, opacity: fade }}
           className="max-w-2xl mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-semibold text-gray-900">
@@ -68,24 +63,14 @@ const FastTrackDegree = () => {
         {/* PROGRAM CARDS */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-28">
           {programs[activeTab].map((item, i) => {
-            const variant = i % 2 === 0 ? fromLeft : fromRight;
+            const x = i % 2 === 0 ? leftX : rightX;
 
             return (
               <motion.div
                 key={i}
-                variants={variant}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, amount: 0.3 }}
-                transition={{ duration: 0.6, ease: "easeOut" }}
-                whileHover={{
-                  scale: 1.05,
-                  transition: {
-                    type: "tween",
-                    duration: 0.25,
-                    ease: [0.4, 0, 0.2, 1],
-                  },
-                }}
+                style={{ x, opacity: fade, scale }}
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.25, ease: "easeOut" }}
                 className="rounded-2xl overflow-hidden bg-[#003C32] text-white will-change-transform"
               >
                 <div className="relative overflow-hidden">
@@ -94,7 +79,7 @@ const FastTrackDegree = () => {
                     alt={item.title}
                     className="w-full h-65 object-cover"
                   />
-                  <div className="absolute inset-0 bg-black/20 opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                  <div className="absolute inset-0 bg-black/25 opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
                 </div>
 
                 <div className="p-6">
@@ -114,25 +99,14 @@ const FastTrackDegree = () => {
         {/* SKILLS */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           {skills.map((item, i) => {
-            const variant =
-              i === 0 ? fromLeft : i === 2 ? fromRight : fadeUp;
+            const x = i === 0 ? leftX : i === 2 ? rightX : 0;
 
             return (
               <motion.div
                 key={i}
-                variants={variant}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, amount: 0.3 }}
-                transition={{ duration: 0.6, ease: "easeOut" }}
-                whileHover={{
-                  scale: 1.05,
-                  transition: {
-                    type: "tween",
-                    duration: 0.25,
-                    ease: [0.4, 0, 0.2, 1],
-                  },
-                }}
+                style={{ x, opacity: fade, scale }}
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.25, ease: "easeOut" }}
                 className="rounded-2xl overflow-hidden bg-[#003C32] text-white will-change-transform"
               >
                 <div className="relative overflow-hidden">
@@ -141,7 +115,7 @@ const FastTrackDegree = () => {
                     alt={item.title}
                     className="w-full h-60 object-cover"
                   />
-                  <div className="absolute inset-0 bg-black/20 opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                  <div className="absolute inset-0 bg-black/25 opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
                 </div>
 
                 <div className="p-6">

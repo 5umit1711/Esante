@@ -1,4 +1,5 @@
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
 
 const imagesTop = [
   "/icons/kangaroo.png",
@@ -22,79 +23,69 @@ const imagesBottom = [
   "/icons/celebration.png",
 ];
 
-const container = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.08,
-    },
-  },
-};
-
-const itemFromLeft = {
-  hidden: { opacity: 0, x: -40 },
-  visible: { opacity: 1, x: 0 },
-};
-
-const itemFromRight = {
-  hidden: { opacity: 0, x: 40 },
-  visible: { opacity: 1, x: 0 },
-};
-
-const textFromLeft = {
-  hidden: { opacity: 0, x: -30 },
-  visible: { opacity: 1, x: 0 },
-};
-
-const textFromRight = {
-  hidden: { opacity: 0, x: 30 },
-  visible: { opacity: 1, x: 0 },
-};
-
 const Journey = () => {
+  const ref = useRef(null);
+
+  // Scroll progress for this section
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"],
+  });
+
+  // TOP ICONS → from LEFT
+  const topX = useTransform(scrollYProgress, [0, 1], [-60, 60]);
+  const topOpacity = useTransform(scrollYProgress, [0, 0.4, 1], [0, 1, 0]);
+
+  // BOTTOM ICONS → from RIGHT
+  const bottomX = useTransform(scrollYProgress, [0, 1], [60, -60]);
+  const bottomOpacity = useTransform(scrollYProgress, [0, 0.4, 1], [0, 1, 0]);
+
+  // TEXT
+  const textLeftX = useTransform(scrollYProgress, [0, 1], [-40, 40]);
+  const textRightX = useTransform(scrollYProgress, [0, 1], [40, -40]);
+  const textOpacity = useTransform(scrollYProgress, [0, 0.5, 1], [0, 1, 0]);
+
   return (
-    <section className="w-full bg-white pt-32 pb-32 flex flex-col justify-center">
+    <section
+      ref={ref}
+      className="w-full bg-white pt-32 pb-32 flex flex-col justify-center"
+    >
 
       {/* TOP ICONS */}
-      <motion.div
-        variants={container}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.3 }}
-        className="w-full grid grid-cols-4 gap-x-14 gap-y-16 place-items-center px-20"
-      >
+      <div className="w-full grid grid-cols-4 gap-x-14 gap-y-16 place-items-center px-20">
         {imagesTop.map((img, i) => (
           <motion.div
             key={i}
-            variants={itemFromLeft}
+            style={{
+              x: topX,
+              opacity: topOpacity,
+            }}
             whileHover={{ scale: 1.08 }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
-            className="w-28 h-28 md:w-32 md:h-32 rounded-2xl overflow-hidden"
+            transition={{ type: "tween", duration: 0.25 }}
+            className="w-28 h-28 md:w-32 md:h-32 rounded-2xl overflow-hidden will-change-transform"
           >
             <img src={img} alt="" className="w-full h-full object-cover" />
           </motion.div>
         ))}
-      </motion.div>
+      </div>
 
       {/* CENTER TEXT */}
       <div className="text-center my-24 px-6 overflow-hidden">
         <motion.p
-          variants={textFromLeft}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.4 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
+          style={{
+            x: textLeftX,
+            opacity: textOpacity,
+          }}
           className="text-2xl md:text-3xl text-gray-700 leading-relaxed"
         >
           <span className="italic">From dreaming in your room</span> to
         </motion.p>
 
         <motion.p
-          variants={textFromRight}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.4 }}
-          transition={{ duration: 0.6, delay: 0.15, ease: "easeOut" }}
+          style={{
+            x: textRightX,
+            opacity: textOpacity,
+          }}
           className="text-2xl md:text-3xl font-semibold text-orange-500 mt-4"
         >
           living in another country.
@@ -102,25 +93,22 @@ const Journey = () => {
       </div>
 
       {/* BOTTOM ICONS */}
-      <motion.div
-        variants={container}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.3 }}
-        className="w-full grid grid-cols-4 gap-x-14 gap-y-16 place-items-center px-20"
-      >
+      <div className="w-full grid grid-cols-4 gap-x-14 gap-y-16 place-items-center px-20">
         {imagesBottom.map((img, i) => (
           <motion.div
             key={i}
-            variants={itemFromRight}
+            style={{
+              x: bottomX,
+              opacity: bottomOpacity,
+            }}
             whileHover={{ scale: 1.08 }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
-            className="w-28 h-28 md:w-32 md:h-32 rounded-2xl overflow-hidden"
+            transition={{ type: "tween", duration: 0.25 }}
+            className="w-28 h-28 md:w-32 md:h-32 rounded-2xl overflow-hidden will-change-transform"
           >
             <img src={img} alt="" className="w-full h-full object-cover" />
           </motion.div>
         ))}
-      </motion.div>
+      </div>
 
     </section>
   );

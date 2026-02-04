@@ -1,10 +1,11 @@
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
 
 const features = [
   {
     title: "Migration Advisors",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut.",
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     points: [
       "We help in recruit students from all over the world.",
       "We help in recruit students from all over the world.",
@@ -19,7 +20,7 @@ const features = [
   {
     title: "Education & Training",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut.",
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     points: [
       "We help in recruit students from all over the world.",
       "We help in recruit students from all over the world.",
@@ -33,27 +34,26 @@ const features = [
   },
 ];
 
-const fromLeft = {
-  hidden: { opacity: 0, x: -50 },
-  visible: { opacity: 1, x: 0 },
-};
-
-const fromRight = {
-  hidden: { opacity: 0, x: 50 },
-  visible: { opacity: 1, x: 0 },
-};
-
 const WhatEsanteDoes = () => {
+  const sectionRef = useRef(null);
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+
+  const leftX = useTransform(scrollYProgress, [0, 1], [-60, 60]);
+  const rightX = useTransform(scrollYProgress, [0, 1], [60, -60]);
+  const opacity = useTransform(scrollYProgress, [0, 0.4, 1], [0, 1, 0]);
+  const scale = useTransform(scrollYProgress, [0, 0.4, 1], [0.95, 1, 0.95]);
+
   return (
-    <section className="w-full bg-white py-32">
+    <section ref={sectionRef} className="w-full bg-white py-32">
       <div className="w-full px-20">
 
         {/* SECTION HEADING */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
+          style={{ opacity, y: leftX }}
           className="mb-20 max-w-2xl"
         >
           <h2 className="text-4xl md:text-5xl font-semibold text-gray-900">
@@ -67,7 +67,8 @@ const WhatEsanteDoes = () => {
         {/* FEATURE BLOCKS */}
         <div className="rounded-[40px] overflow-hidden">
           {features.map((item, i) => {
-            const isEven = i % 2 === 0;
+            const textX = i === 0 ? leftX : rightX;
+            const imageX = i === 0 ? rightX : leftX;
 
             return (
               <div
@@ -75,19 +76,15 @@ const WhatEsanteDoes = () => {
                 className={`${item.bg} text-white grid grid-cols-1 lg:grid-cols-2`}
               >
 
-                {/* IMAGE FIRST (ONLY FOR ODD / EDUCATION) */}
-                {!isEven && (
+                {/* IMAGE (LEFT FOR EDUCATION) */}
+                {i === 1 && (
                   <motion.div
-                    variants={fromLeft}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true, amount: 0.3 }}
-                    transition={{ duration: 0.7, ease: "easeOut" }}
+                    style={{ x: imageX, opacity, scale }}
                     className="p-12 flex items-center justify-center"
                   >
                     <motion.div
                       whileHover={{ scale: 1.06 }}
-                      transition={{ duration: 0.4, ease: "easeOut" }}
+                      transition={{ duration: 0.35, ease: "easeOut" }}
                       className="relative w-full h-105 rounded-3xl overflow-hidden"
                     >
                       <img
@@ -95,18 +92,14 @@ const WhatEsanteDoes = () => {
                         alt={item.title}
                         className="w-full h-full object-cover"
                       />
-                      <div className="absolute inset-0 bg-black/20 opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                      <div className="absolute inset-0 bg-black/25 opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
                     </motion.div>
                   </motion.div>
                 )}
 
                 {/* CONTENT */}
                 <motion.div
-                  variants={isEven ? fromLeft : fromRight}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true, amount: 0.3 }}
-                  transition={{ duration: 0.7, ease: "easeOut" }}
+                  style={{ x: textX, opacity }}
                   className="p-16 flex flex-col justify-center"
                 >
                   <h3 className={`text-3xl font-semibold mb-4 ${item.titleColor}`}>
@@ -135,19 +128,15 @@ const WhatEsanteDoes = () => {
                   </motion.button>
                 </motion.div>
 
-                {/* IMAGE LAST (ONLY FOR EVEN / MIGRATION) */}
-                {isEven && (
+                {/* IMAGE (RIGHT FOR MIGRATION) */}
+                {i === 0 && (
                   <motion.div
-                    variants={fromRight}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true, amount: 0.3 }}
-                    transition={{ duration: 0.7, ease: "easeOut" }}
+                    style={{ x: imageX, opacity, scale }}
                     className="p-12 flex items-center justify-center"
                   >
                     <motion.div
                       whileHover={{ scale: 1.06 }}
-                      transition={{ duration: 0.4, ease: "easeOut" }}
+                      transition={{ duration: 0.35, ease: "easeOut" }}
                       className="relative w-full h-105 rounded-3xl overflow-hidden"
                     >
                       <img
@@ -155,7 +144,7 @@ const WhatEsanteDoes = () => {
                         alt={item.title}
                         className="w-full h-full object-cover"
                       />
-                      <div className="absolute inset-0 bg-black/20 opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                      <div className="absolute inset-0 bg-black/25 opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
                     </motion.div>
                   </motion.div>
                 )}

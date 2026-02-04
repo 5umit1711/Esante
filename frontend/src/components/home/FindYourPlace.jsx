@@ -1,33 +1,34 @@
-import { motion } from "framer-motion";
-
-const fromLeft = {
-  hidden: { opacity: 0, x: -40 },
-  visible: { opacity: 1, x: 0 },
-};
-
-const fromRight = {
-  hidden: { opacity: 0, x: 40 },
-  visible: { opacity: 1, x: 0 },
-};
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
 
 const hoverTween = {
-  type: "tween",
   duration: 0.25,
   ease: [0.4, 0, 0.2, 1],
 };
 
 const FindYourPlace = () => {
+  const sectionRef = useRef(null);
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+
+  const leftX = useTransform(scrollYProgress, [0, 1], [-60, 60]);
+  const rightX = useTransform(scrollYProgress, [0, 1], [60, -60]);
+  const opacity = useTransform(scrollYProgress, [0, 0.4, 1], [0, 1, 0]);
+  const scale = useTransform(scrollYProgress, [0, 0.4, 1], [0.95, 1, 0.95]);
+
   return (
-    <section className="w-full bg-white py-32">
+    <section
+      ref={sectionRef}
+      className="w-full bg-white py-32"
+    >
       <div className="w-full px-20">
 
         {/* SECTION HEADING */}
         <motion.div
-          variants={fromRight}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.7, ease: "easeOut" }}
+          style={{ x: rightX, opacity }}
           className="mb-16 max-w-2xl"
         >
           <h2 className="text-4xl md:text-5xl font-semibold text-gray-900">
@@ -43,12 +44,9 @@ const FindYourPlace = () => {
 
           {/* LEFT CARD (CLASSROOM) */}
           <motion.div
-            variants={fromLeft}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
-            whileHover={{ scale: 1.04, transition: hoverTween }}
+            style={{ x: leftX, opacity, scale }}
+            whileHover={{ scale: 1.04 }}
+            transition={hoverTween}
             className="relative rounded-3xl overflow-hidden will-change-transform"
           >
             <img
@@ -65,17 +63,14 @@ const FindYourPlace = () => {
               👥 54,000+ Students
             </div>
 
-            <div className="absolute inset-0 bg-black/10 opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+            <div className="absolute inset-0 bg-black/15 opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
           </motion.div>
 
           {/* RIGHT CARD (UNIVERSITY DETAILS) */}
           <motion.div
-            variants={fromRight}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
-            whileHover={{ scale: 1.04, transition: hoverTween }}
+            style={{ x: rightX, opacity, scale }}
+            whileHover={{ scale: 1.04 }}
+            transition={hoverTween}
             className="bg-[#003C32] text-white rounded-3xl p-10 relative will-change-transform"
           >
             <img

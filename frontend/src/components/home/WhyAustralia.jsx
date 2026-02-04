@@ -1,32 +1,40 @@
-import { motion } from "framer-motion";
-
-const textFromLeft = {
-  hidden: { opacity: 0, x: -40 },
-  visible: { opacity: 1, x: 0 },
-};
-
-const imageFromRight = {
-  hidden: { opacity: 0, x: 40 },
-  visible: { opacity: 1, x: 0 },
-};
-
-const statFadeUp = {
-  hidden: { opacity: 0, y: 12 },
-  visible: { opacity: 1, y: 0 },
-};
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
 
 const WhyAustralia = () => {
+  const ref = useRef(null);
+
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"],
+  });
+
+  // LEFT CONTENT
+  const textX = useTransform(scrollYProgress, [0, 1], [-60, 60]);
+  const textOpacity = useTransform(scrollYProgress, [0, 0.4, 1], [0, 1, 0]);
+
+  // STATS
+  const statY = useTransform(scrollYProgress, [0, 1], [20, -20]);
+  const statOpacity = useTransform(scrollYProgress, [0.15, 0.5, 0.9], [0, 1, 0]);
+
+  // IMAGE
+  const imageX = useTransform(scrollYProgress, [0, 1], [60, -60]);
+  const imageOpacity = useTransform(scrollYProgress, [0, 0.4, 1], [0, 1, 0]);
+
   return (
-    <section className="w-full bg-[#FBF9F4] py-32">
+    <section
+      ref={ref}
+      className="w-full bg-[#FBF9F4] py-32"
+    >
       <div className="w-full px-20 grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
 
         {/* LEFT CONTENT */}
         <motion.div
-          variants={textFromLeft}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.7, ease: "easeOut" }}
+          style={{
+            x: textX,
+            opacity: textOpacity,
+          }}
+          className="will-change-transform"
         >
           <h2 className="text-4xl md:text-5xl font-semibold text-gray-900 leading-tight">
             Why <span className="text-orange-500 italic">Australia</span> is the
@@ -51,15 +59,11 @@ const WhyAustralia = () => {
             ].map((item, i) => (
               <motion.div
                 key={i}
-                variants={statFadeUp}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, amount: 0.3 }}
-                transition={{
-                  duration: 0.5,
-                  delay: 0.2 + i * 0.12,
-                  ease: "easeOut",
+                style={{
+                  y: statY,
+                  opacity: statOpacity,
                 }}
+                className="will-change-transform"
               >
                 <p className="text-3xl font-bold text-orange-500">
                   {item.value}
@@ -74,18 +78,17 @@ const WhyAustralia = () => {
 
         {/* RIGHT IMAGE */}
         <motion.div
-          variants={imageFromRight}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.7, ease: "easeOut", delay: 0.1 }}
-          className="relative w-full h-130 lg:ml-auto"
+          style={{
+            x: imageX,
+            opacity: imageOpacity,
+          }}
+          className="relative w-full h-130 lg:ml-auto will-change-transform"
         >
           <motion.img
             src="/why-australia.png"
             alt="Why study in Australia"
             whileHover={{ scale: 1.06 }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
+            transition={{ duration: 0.35, ease: "easeOut" }}
             className="w-full h-full object-cover rounded-3xl shadow-lg"
           />
           <div className="absolute inset-0 rounded-3xl bg-black/10 pointer-events-none" />
